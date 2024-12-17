@@ -9,6 +9,6 @@ public class HandData : MonoBehaviour
     public HandModelType handModelType;
     public Transform root;
     public Animator animator;
-    public Transform[] bones;
+    public Transform[] fingerBones;
 
 }
