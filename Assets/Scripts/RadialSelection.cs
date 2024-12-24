@@ -11,6 +11,13 @@ public class RadialSelection : MonoBehaviour
     public Transform stylusTip;
     public InputActionProperty buttonAAction;
 
+    [Header("Visual Settings")]
+    public Color defaultColor = Color.gray;
+    public Color hoverColor = Color.blue;
+    [Range(1, 10)]
+    public float gapSizeInDegrees = 5f;
+
+
     [Header("Settings")]
     [Range(2, 10)]
     public int numberOfRadials = 4;
@@ -20,6 +27,7 @@ public class RadialSelection : MonoBehaviour
     private bool isMenuActive = false;
     private int hoveredSegment = -1;
     private Vector3 menuSpawnPosition;
+    
 
     private void OnEnable()
     {
@@ -49,56 +57,65 @@ public class RadialSelection : MonoBehaviour
         }
     }
 
-    private void CreateRadials()
+private void CreateRadials()
+{
+    radialSegments = new GameObject[numberOfRadials];
+    float anglePerSegment = 360f / numberOfRadials;
+    float angleBetweenParts = 5f; // Gap between segments
+
+    for (int i = 0; i < numberOfRadials; i++)
     {
-        radialSegments = new GameObject[numberOfRadials];
-        float anglePerSegment = 360f / numberOfRadials;
-
-        for (int i = 0; i < numberOfRadials; i++)
-        {
-            float angle = i * anglePerSegment;
-            GameObject spawnedRadial = Instantiate(radialPrefab, radialParent);
-            spawnedRadial.transform.localRotation = Quaternion.Euler(0, 0, angle);
-            spawnedRadial.transform.localPosition = Vector3.zero;
-            
-            // Set fill amount for the radial segment
-            Image radialImage = spawnedRadial.GetComponent<Image>();
-            radialImage.fillAmount = 1f / numberOfRadials;
-            
-            radialSegments[i] = spawnedRadial;
-        }
-    }
-
-    private void CheckHover()
-    {
-        // Convert stylus position to local space relative to menu
-        Vector3 localStylusPos = radialParent.InverseTransformPoint(stylusTip.position);
-        float angle = Mathf.Atan2(localStylusPos.y, localStylusPos.x) * Mathf.Rad2Deg;
-        if (angle < 0) angle += 360f;
-
-        float distance = Vector2.Distance(Vector2.zero, new Vector2(localStylusPos.x, localStylusPos.y));
+        float angle = -i * anglePerSegment - angleBetweenParts / 2f;
+        GameObject spawnedRadial = Instantiate(radialPrefab, radialParent);
+        spawnedRadial.transform.localRotation = Quaternion.Euler(0, 0, angle);
+        spawnedRadial.transform.localPosition = Vector3.zero;
         
-        // Reset previous hover state
-        if (hoveredSegment >= 0)
-        {
-            radialSegments[hoveredSegment].GetComponent<Image>().color = Color.gray;
-        }
+        Image radialImage = spawnedRadial.GetComponent<Image>();
+        radialImage.fillAmount = (1f / numberOfRadials) - (angleBetweenParts / 360f);
+        radialImage.color = defaultColor;
+        
+        radialSegments[i] = spawnedRadial;
+    }
+}
 
-        // Check if stylus is within selection radius
-        if (distance < selectionRadius)
+private void CheckHover()
+{
+    // Reset previous hover state
+    if (hoveredSegment >= 0)
+    {
+        radialSegments[hoveredSegment].GetComponent<Image>().color = defaultColor;
+    }
+
+    Vector3 centerToStylus = stylusTip.position - radialParent.position;
+    Vector3 projectedVector = Vector3.ProjectOnPlane(centerToStylus, radialParent.forward);
+    
+    float distance = projectedVector.magnitude;
+
+    if (distance < selectionRadius)
+    {
+        float angle = Vector3.SignedAngle(radialParent.up, projectedVector, radialParent.forward);
+        
+        if (angle < 0)
+            angle += 360f;
+            
+        // Reverse the segment index calculation
+        hoveredSegment = numberOfRadials - 1 - (int)(angle * numberOfRadials / 360f);
+        
+        // Wrap around to ensure valid index
+        hoveredSegment = (hoveredSegment + numberOfRadials) % numberOfRadials;
+        
+        Debug.Log($"Angle: {angle}, Hovering Segment: {hoveredSegment}");
+
+        if (hoveredSegment >= 0 && hoveredSegment < numberOfRadials)
         {
-            int newHoveredSegment = (int)(angle / (360f / numberOfRadials));
-            if (newHoveredSegment >= 0 && newHoveredSegment < numberOfRadials)
-            {
-                hoveredSegment = newHoveredSegment;
-                radialSegments[hoveredSegment].GetComponent<Image>().color = Color.blue;
-            }
-        }
-        else
-        {
-            hoveredSegment = -1;
+            radialSegments[hoveredSegment].GetComponent<Image>().color = hoverColor;
         }
     }
+    else
+    {
+        hoveredSegment = -1;
+    }
+}
 
     private void OnButtonAPressed(InputAction.CallbackContext context)
     {
@@ -115,6 +132,7 @@ public class RadialSelection : MonoBehaviour
         if (hoveredSegment >= 0)
         {
             HandleSelection(hoveredSegment);
+            Debug.Log($"Selected: {hoveredSegment} (Segment on release {hoveredSegment})");
         }
         SetMenuActive(false);
     }
@@ -122,6 +140,7 @@ public class RadialSelection : MonoBehaviour
     private void SetMenuActive(bool active)
     {
         isMenuActive = active;
+        Debug.Log($"Menu active: {active}");
         radialParent.gameObject.SetActive(active);
         
         if (!active)
@@ -130,27 +149,24 @@ public class RadialSelection : MonoBehaviour
             // Reset all segments to default color
             foreach (var segment in radialSegments)
             {
-                segment.GetComponent<Image>().color = Color.gray;
+                segment.GetComponent<Image>().color = defaultColor;
             }
         }
     }
 
     private void HandleSelection(int segmentIndex)
     {
-        switch (segmentIndex)
+        string selectedMode = segmentIndex switch
         {
-            case 0: // Left (Domain Box)
-                Debug.Log("Selected Domain Box Creation Mode");
-                break;
-            case 1: // Top (Spatial AI)
-                Debug.Log("Selected Spatial AI Mode");
-                break;
-            case 2: // Right (Sculpt)
-                Debug.Log("Selected Sculpt Mode");
-                break;
-            case 3: // Bottom (Clear)
-                Debug.Log("Selected Clear Scene");
-                break;
-        }
+            0 => "Domain Box Creation Mode",
+            1 => "Spatial AI Mode",
+            2 => "Sculpt Mode",
+            3 => "Clear Scene Mode",
+            _ => "Unknown Mode"
+        };
+
+        Debug.Log($"Selected: {selectedMode} (Segment {segmentIndex})");
     }
+
+    
 }
