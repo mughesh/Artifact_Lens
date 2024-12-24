@@ -1611,12 +1611,21 @@ MonoBehaviour:
   gapSizeInDegrees: 5
   numberOfRadials: 4
   selectionRadius: 0.1
-  segmentIcons:
-  - {fileID: 4364232704985382630, guid: c769004178e8a344497a2e27326f6772, type: 3}
-  - {fileID: 4364232704985382630, guid: c769004178e8a344497a2e27326f6772, type: 3}
-  - {fileID: 4364232704985382630, guid: c769004178e8a344497a2e27326f6772, type: 3}
-  - {fileID: 4364232704985382630, guid: c769004178e8a344497a2e27326f6772, type: 3}
-  iconRadius: 0.7
+  iconPrefab: {fileID: 6070487266006653147, guid: a2b2a5d5343d09c4e903c0ac86de84e9,
+    type: 3}
+  menuIcons:
+  - icon: {fileID: 21300000, guid: 17d565bb4a7744b41b7e4dc7e3a09e35, type: 3}
+    label: Segment 1
+  - icon: {fileID: 21300000, guid: 7d3dbc333af046c4193982e1166659dd, type: 3}
+    label: Segment 2
+  - icon: {fileID: 21300000, guid: c76518a5819794083a346812c0906b77, type: 3}
+    label: Segment 3
+  - icon: {fileID: 21300000, guid: 1d56a2d39cfbb49149abbf0076259327, type: 3}
+    label: Segment 4
+  iconDistanceFromCenter: 70
+  iconSize: {x: 30, y: 30}
+  stylusInteractable: {fileID: 28518112}
+  domainBoxCreator: {fileID: 1059571511}
 --- !u!4 &1101773817
 Transform:
   m_ObjectHideFlags: 0
