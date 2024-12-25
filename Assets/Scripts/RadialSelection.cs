@@ -233,7 +233,7 @@ public class RadialSelection : MonoBehaviour
         // Handle different modes
         switch (segmentIndex)
         {
-            case 0: // Domain Box Creation Mode
+            case 3: // Domain Box Creation Mode
                 if (domainBoxCreator != null)
                 {
                     domainBoxCreator.enabled = true;
@@ -241,7 +241,7 @@ public class RadialSelection : MonoBehaviour
                 Debug.Log("Domain Box Creation Mode Enabled");
                 break;
                 
-            case 1: // Spatial AI Mode
+            case 0: // Spatial AI Mode
                 if (domainBoxCreator != null)
                 {
                     domainBoxCreator.enabled = false;
@@ -257,7 +257,7 @@ public class RadialSelection : MonoBehaviour
                 Debug.Log("Sculpt Mode Enabled");
                 break;
                 
-            case 3: // Clear Scene Mode
+            case 1: // Clear Scene Mode
                 if (domainBoxCreator != null)
                 {
                     domainBoxCreator.ResetDomain();
