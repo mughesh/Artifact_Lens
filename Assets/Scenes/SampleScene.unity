@@ -395,7 +395,7 @@ MeshCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
@@ -614,7 +614,7 @@ Transform:
   m_GameObject: {fileID: 364872731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07580689, y: 0.76, z: 0.6}
+  m_LocalPosition: {x: -0.6288931, y: 0.8056, z: 0.6}
   m_LocalScale: {x: 1.08, y: 0.05, z: 0.58}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1040,12 +1040,12 @@ PrefabInstance:
     - target: {fileID: 1857229286467065778, guid: cb1310f64dd794703964833b63e87d96,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0037
+      value: -0.701
       objectReference: {fileID: 0}
     - target: {fileID: 1857229286467065778, guid: cb1310f64dd794703964833b63e87d96,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.7977
+      value: 0.844
       objectReference: {fileID: 0}
     - target: {fileID: 1857229286467065778, guid: cb1310f64dd794703964833b63e87d96,
         type: 3}
@@ -2187,6 +2187,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Interaction Setup
       objectReference: {fileID: 0}
+    - target: {fileID: 7690080512698956842, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7690080512698956844, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8063056433196656523, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_IsActive
@@ -2630,12 +2640,12 @@ PrefabInstance:
     - target: {fileID: -3910990755373119420, guid: 0f949e6be36f236459b268382b3e71e0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.485
+      value: -0.21969998
       objectReference: {fileID: 0}
     - target: {fileID: -3910990755373119420, guid: 0f949e6be36f236459b268382b3e71e0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.188
+      value: -0.1371
       objectReference: {fileID: 0}
     - target: {fileID: -3910990755373119420, guid: 0f949e6be36f236459b268382b3e71e0,
         type: 3}
