@@ -21,9 +21,10 @@ public class Stylus_Reset : MonoBehaviour
     void Update()
     {
         transform.position = SocketInteractor.transform.position;
-        if (!isGrabbed)
+        Vector3 distance = transform.position - SocketInteractor.transform.position;
+        if (!isGrabbed && distance.magnitude > resetDistance)
         {
-            ResetStylus();
+            transform.position = SocketInteractor.transform.position;
         }
 
     }
@@ -38,12 +39,5 @@ public class Stylus_Reset : MonoBehaviour
         isGrabbed = false;
     }
 
-    public void ResetStylus()
-    {
-        Vector3 distance = transform.position - SocketInteractor.transform.position;
-        if (distance.magnitude > resetDistance)
-        {
-            transform.position = SocketInteractor.transform.position;
-        }
-    }
+
 }
