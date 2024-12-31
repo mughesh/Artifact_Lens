@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 5697239811221979413}
   - component: {fileID: 4682072903008359905}
   m_Layer: 0
-  m_Name: redMark
+  m_Name: redMark.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -278,10 +278,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1212461838924976217}
+  - {fileID: 5362134306923745537}
   - {fileID: 9125043212459629788}
   - {fileID: 4003698047827302806}
-  - {fileID: 5362134306923745537}
+  - {fileID: 1212461838924976217}
   - {fileID: 5478409887247598445}
   - {fileID: 2161191142890084668}
   - {fileID: 4954409201175325062}
@@ -548,7 +548,7 @@ GameObject:
   - component: {fileID: 8396820201554827926}
   - component: {fileID: 3966369962081769358}
   m_Layer: 0
-  m_Name: redMark.003
+  m_Name: redMark_main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
