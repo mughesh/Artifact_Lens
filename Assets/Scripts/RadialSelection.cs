@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Collections;
 
 [System.Serializable]
 public class MenuIconData
@@ -20,8 +20,13 @@ public class RadialSelection : MonoBehaviour
     public Transform stylusTip;
     public InputActionProperty buttonAAction;
 
+    [Header("Mode References")]
+    [SerializeField] private DomainBoxCreator domainBoxCreator;
+    [SerializeField] private ScanController scanController;
+
     [Header("Menu Items")]
     public MenuIconData[] menuIcons = new MenuIconData[5];
+    private MenuMode currentMode = (MenuMode)(-1);
 
     [Header("Visual Settings")]
     public Color defaultColor = Color.gray;
@@ -270,43 +275,66 @@ public class RadialSelection : MonoBehaviour
         originalScales = null;
         hoveredSegment = -1;
     }
-    
-    private void HandleSelection(int segmentIndex)
+
+private void HandleSelection(int segmentIndex)
+{
+    MenuMode selectedMode = (MenuMode)segmentIndex;
+    Debug.Log($"Selected mode: {selectedMode}");
+
+    // Disable previous mode
+    //DisableCurrentMode();
+
+    // Enable new mode
+    switch (selectedMode)
     {
-        MenuMode selectedMode = (MenuMode)segmentIndex;
-        Debug.Log($"Selected mode: {selectedMode}");
+        case MenuMode.Annotate:
+            Debug.Log("Annotation mode - Ready to place markers");
+            currentMode = MenuMode.Annotate;
+            break;
 
-        switch (selectedMode)
-        {
-            case MenuMode.Annotate:
-                Debug.Log("Annotate mode selected");
-                // Add your annotation logic
-                break;
+        case MenuMode.Passthrough:
+            Debug.Log("Switching to Museum Scene");
+            StartCoroutine(SwitchToMuseum());
+            break;
 
-            case MenuMode.Passthrough:
-                Debug.Log("Passthrough mode selected");
-                // Add scene switching logic
-                break;
+        case MenuMode.Clear:
+            if (domainBoxCreator != null)
+            {
+                domainBoxCreator.ResetDomain();
+                Debug.Log("Scene cleared");
+            }
+            currentMode = (MenuMode)(-1); // Reset to no mode
+            break;
 
-            case MenuMode.Clear:
-                Debug.Log("Clear mode selected");
-                // Add clear scene logic
-                break;
+        case MenuMode.Scan:
+            if (scanController != null)
+            {
+                scanController.StartScan();
+                Debug.Log("Starting scan sequence");
+            }
+            currentMode = MenuMode.Scan;
+            break;
 
-            case MenuMode.Scan:
-                Debug.Log("Scan mode selected");
-                // Add scanning logic
-                break;
-
-            case MenuMode.DomainBox:
-                Debug.Log("Domain Box mode selected");
-                // Add domain box creation logic
-                break;
-        }
+        case MenuMode.DomainBox:
+            if (domainBoxCreator != null)
+            {
+                domainBoxCreator.enabled = true;
+                Debug.Log("Domain Box Creation mode enabled");
+            }
+            currentMode = MenuMode.DomainBox;
+            break;
     }
+}
 
     private void OnDestroy()
     {
         SetMenuActive(false);
     }
+    private IEnumerator SwitchToMuseum()
+    {
+        // Optional: Add fade effect or transition here
+        yield return new WaitForSeconds(0.5f);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Museum_Scene");
+    }
+
 }
