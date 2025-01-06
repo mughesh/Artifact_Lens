@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
+using TMPro;
+using System.Collections;
 
 [System.Serializable]
-public class RadialMenuIcon
+public class MenuIconData
 {
     public Sprite icon;
     public string label;
@@ -15,53 +15,53 @@ public class RadialSelection : MonoBehaviour
 {
     [Header("References")]
     public GameObject radialPrefab;
+    public GameObject iconPrefab;
     public Transform radialParent;
     public Transform stylusTip;
     public InputActionProperty buttonAAction;
+
+    [Header("Mode References")]
+    [SerializeField] private DomainBoxCreator domainBoxCreator;
+    [SerializeField] private ScanController scanController;
+
+    [Header("Menu Items")]
+    public MenuIconData[] menuIcons = new MenuIconData[5];
+    private MenuMode currentMode = (MenuMode)(-1);
 
     [Header("Visual Settings")]
     public Color defaultColor = Color.gray;
     public Color hoverColor = Color.blue;
     [Range(1, 10)]
     public float gapSizeInDegrees = 5f;
+    public float iconOffset = 70f;
+    public float menuRotationOffset = 0f; 
+    public float iconAngleOffset = 0f; 
+
+    [Header("Hover Effects")]
+    public float hoverScaleMultiplier = 1.1f;
+    public float scaleTransitionSpeed = 10f;
 
     [Header("Settings")]
     [Range(2, 10)]
-    public int numberOfRadials = 4;
+    public int numberOfRadials = 5; // Changed to 5 for our menu options
     public float selectionRadius = 0.1f;
 
-    [Header("Icon Settings")]
-    [SerializeField] private GameObject iconPrefab;
-    [SerializeField] private RadialMenuIcon[] menuIcons = new RadialMenuIcon[4];
-    [SerializeField] private float iconDistanceFromCenter = 70f;
-    [SerializeField] private Vector2 iconSize = new Vector2(30f, 30f);
-
-    [Header("Stylus Reference")]
-    [SerializeField] private XRGrabInteractable stylusInteractable;
-    [SerializeField] private DomainBoxCreator domainBoxCreator; // Reference to your DomainBoxCreator
+    public enum MenuMode
+    {
+        Annotate = 0,    // Top-right
+        Passthrough = 1, // Top-left
+        Clear = 2,       // Bottom-left
+        Scan = 3,        // Bottom
+        DomainBox = 4    // Bottom-right
+    }
 
     private GameObject[] radialSegments;
     private GameObject[] iconObjects;
+    private TextMeshProUGUI[] iconTexts;
+    private Vector3[] originalScales;
     private bool isMenuActive = false;
     private int hoveredSegment = -1;
     private Vector3 menuSpawnPosition;
-    private bool isStylusGrabbed = false;
-    private int currentMode = -1; // -1: No mode, 0: Domain Box, 1: Spatial AI, 2: Sculpt, 3: Clear
-
-    private void Start()
-    {
-        if (stylusInteractable != null)
-        {
-            stylusInteractable.selectEntered.AddListener(OnStylusGrabbed);
-            stylusInteractable.selectExited.AddListener(OnStylusReleased);
-        }
-        
-        // Ensure domain box creator starts disabled
-        if (domainBoxCreator != null)
-        {
-            domainBoxCreator.enabled = false;
-        }
-    }
 
     private void OnEnable()
     {
@@ -77,27 +77,23 @@ public class RadialSelection : MonoBehaviour
         buttonAAction.action.canceled -= OnButtonAReleased;
     }
 
-    private void OnStylusGrabbed(SelectEnterEventArgs args)
-    {
-        isStylusGrabbed = true;
-    }
-
-    private void OnStylusReleased(SelectExitEventArgs args)
-    {
-        isStylusGrabbed = false;
-    }
-
-    void CreateRadials()
+     private void CreateRadials()
     {
         radialSegments = new GameObject[numberOfRadials];
         iconObjects = new GameObject[numberOfRadials];
+        iconTexts = new TextMeshProUGUI[numberOfRadials];
+        originalScales = new Vector3[numberOfRadials];
+        
         float anglePerSegment = 360f / numberOfRadials;
         float angleBetweenParts = gapSizeInDegrees;
+
+        // Start from top-right and go clockwise
+        float startAngle = -18f + menuRotationOffset;
 
         for (int i = 0; i < numberOfRadials; i++)
         {
             // Create segment
-            float angle = -i * anglePerSegment - angleBetweenParts / 2f;
+            float angle = startAngle - (i * anglePerSegment);
             GameObject spawnedRadial = Instantiate(radialPrefab, radialParent);
             spawnedRadial.transform.localRotation = Quaternion.Euler(0, 0, angle);
             spawnedRadial.transform.localPosition = Vector3.zero;
@@ -107,37 +103,47 @@ public class RadialSelection : MonoBehaviour
             radialImage.color = defaultColor;
             
             radialSegments[i] = spawnedRadial;
+            originalScales[i] = spawnedRadial.transform.localScale;
 
-            // Create icon for this segment
-            CreateIconForSegment(i, spawnedRadial.transform);
+            // Create icon
+            CreateIconForSegment(i, angle);
         }
     }
 
-    private void CreateIconForSegment(int index, Transform segmentTransform)
+     private void CreateIconForSegment(int index, float segmentAngle)
     {
-        if (iconPrefab == null || index >= menuIcons.Length || menuIcons[index].icon == null)
-        {
-            Debug.LogWarning($"Missing icon setup for segment {index}");
+        if (iconPrefab == null || index >= menuIcons.Length || menuIcons[index] == null)
             return;
+
+        // Calculate position with both menu rotation and icon position offsets
+        float adjustedAngle = segmentAngle + 90f + iconAngleOffset;
+        float angleRad = adjustedAngle * Mathf.Deg2Rad;
+        Vector2 position = new Vector2(
+            Mathf.Cos(angleRad) * iconOffset,
+            Mathf.Sin(angleRad) * iconOffset
+        );
+
+        // Create icon
+        GameObject icon = Instantiate(iconPrefab, radialParent);
+        icon.transform.localPosition = position;
+        icon.transform.localRotation = Quaternion.identity;
+
+        // Set icon image
+        Image iconImage = icon.GetComponentInChildren<Image>();
+        if (iconImage != null && menuIcons[index].icon != null)
+        {
+            iconImage.sprite = menuIcons[index].icon;
         }
 
-        // Create icon GameObject
-        GameObject icon = Instantiate(iconPrefab, segmentTransform);
-        icon.name = $"Icon_{index}";
-        
-        // Position the icon
-        RectTransform iconRect = icon.GetComponent<RectTransform>();
-        iconRect.sizeDelta = iconSize;
-        
-        // Use fixed offset for all icons
-        float offset = iconDistanceFromCenter;
-        iconRect.anchoredPosition = new Vector2(offset, offset);
-        
-        // Set the icon sprite
-        Image iconImage = icon.GetComponent<Image>();
-        iconImage.sprite = menuIcons[index].icon;
-        iconImage.color = Color.white;
-        
+        // Set text and hide initially
+        TextMeshProUGUI iconText = icon.GetComponentInChildren<TextMeshProUGUI>();
+        if (iconText != null)
+        {
+            iconText.text = menuIcons[index].label;
+            iconText.gameObject.SetActive(false); // Hide initially
+            iconTexts[index] = iconText;
+        }
+
         iconObjects[index] = icon;
     }
 
@@ -146,12 +152,41 @@ public class RadialSelection : MonoBehaviour
         if (isMenuActive)
         {
             CheckHover();
+            UpdateHoverEffects();
         }
     }
 
-    private void CheckHover()
+        private void UpdateHoverEffects()
     {
-        if (hoveredSegment >= 0)
+        for (int i = 0; i < numberOfRadials; i++)
+        {
+            if (radialSegments[i] == null) continue;
+
+            // Handle segment scaling
+            Vector3 targetScale = originalScales[i];
+            if (i == hoveredSegment)
+            {
+                targetScale *= hoverScaleMultiplier;
+            }
+
+            radialSegments[i].transform.localScale = Vector3.Lerp(
+                radialSegments[i].transform.localScale,
+                targetScale,
+                Time.deltaTime * scaleTransitionSpeed
+            );
+
+            // Handle text visibility
+            if (iconTexts[i] != null)
+            {
+                iconTexts[i].gameObject.SetActive(i == hoveredSegment);
+            }
+        }
+    }
+
+     private void CheckHover()
+    {
+        // Reset previous hover state
+        if (hoveredSegment >= 0 && hoveredSegment < radialSegments.Length)
         {
             radialSegments[hoveredSegment].GetComponent<Image>().color = defaultColor;
         }
@@ -160,32 +195,27 @@ public class RadialSelection : MonoBehaviour
         Vector3 projectedVector = Vector3.ProjectOnPlane(centerToStylus, radialParent.forward);
         
         float distance = projectedVector.magnitude;
+        hoveredSegment = -1;
 
         if (distance < selectionRadius)
         {
             float angle = Vector3.SignedAngle(radialParent.up, projectedVector, radialParent.forward);
-            
-            if (angle < 0)
-                angle += 360f;
-                
-            hoveredSegment = numberOfRadials - 1 - (int)(angle * numberOfRadials / 360f);
+            angle = (angle - menuRotationOffset + 360f) % 360f;
+
+            // Reverse the segment calculation to fix the hovering direction
+            hoveredSegment = numberOfRadials - 1 - Mathf.FloorToInt(((angle + 18f) % 360f) / (360f / numberOfRadials));
             hoveredSegment = (hoveredSegment + numberOfRadials) % numberOfRadials;
 
-            if (hoveredSegment >= 0 && hoveredSegment < numberOfRadials)
+            if (hoveredSegment >= 0 && hoveredSegment < radialSegments.Length)
             {
                 radialSegments[hoveredSegment].GetComponent<Image>().color = hoverColor;
+                Debug.Log($"Hovering over segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
             }
-        }
-        else
-        {
-            hoveredSegment = -1;
         }
     }
 
     private void OnButtonAPressed(InputAction.CallbackContext context)
     {
-        if (!isStylusGrabbed) return; // Only show menu if stylus is grabbed
-
         menuSpawnPosition = stylusTip.position;
         radialParent.position = menuSpawnPosition;
         radialParent.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
@@ -195,87 +225,116 @@ public class RadialSelection : MonoBehaviour
 
     private void OnButtonAReleased(InputAction.CallbackContext context)
     {
-        if (hoveredSegment >= 0)
+        if (hoveredSegment >= 0 && hoveredSegment < numberOfRadials)
         {
             HandleSelection(hoveredSegment);
         }
         SetMenuActive(false);
     }
 
-    private void SetMenuActive(bool active)
+     private void SetMenuActive(bool active)
     {
         isMenuActive = active;
-        radialParent.gameObject.SetActive(active);
-        
+        Debug.Log($"Menu active: {active}");
+
         if (active)
         {
             CreateRadials();
         }
         else
         {
-            // Cleanup
-            if (radialSegments != null)
-            {
-                foreach (var segment in radialSegments)
-                {
-                    if (segment != null)
-                        Destroy(segment);
-                }
-            }
-            hoveredSegment = -1;
+            CleanupMenu();
         }
+        
+        radialParent.gameObject.SetActive(active);
     }
 
-    private void HandleSelection(int segmentIndex)
+    private void CleanupMenu()
     {
-        currentMode = segmentIndex;
-        
-        // Handle different modes
-        switch (segmentIndex)
+        if (radialSegments != null)
         {
-            case 3: // Domain Box Creation Mode
-                if (domainBoxCreator != null)
-                {
-                    domainBoxCreator.enabled = true;
-                }
-                Debug.Log("Domain Box Creation Mode Enabled");
-                break;
-                
-            case 0: // Spatial AI Mode
-                if (domainBoxCreator != null)
-                {
-                    domainBoxCreator.enabled = false;
-                }
-                Debug.Log("Spatial AI Mode Enabled");
-                break;
-                
-            case 2: // Sculpt Mode
-                if (domainBoxCreator != null)
-                {
-                    domainBoxCreator.enabled = false;
-                }
-                Debug.Log("Sculpt Mode Enabled");
-                break;
-                
-            case 1: // Clear Scene Mode
-                if (domainBoxCreator != null)
-                {
-                    domainBoxCreator.ResetDomain();
-                    domainBoxCreator.enabled = false;
-                }
-                currentMode = -1; // Reset mode after clearing
-                Debug.Log("Scene Cleared");
-                break;
+            foreach (var segment in radialSegments)
+            {
+                if (segment != null)
+                    Destroy(segment);
+            }
+            radialSegments = null;
         }
+
+        if (iconObjects != null)
+        {
+            foreach (var icon in iconObjects)
+            {
+                if (icon != null)
+                    Destroy(icon);
+            }
+            iconObjects = null;
+        }
+
+        iconTexts = null;
+        originalScales = null;
+        hoveredSegment = -1;
     }
+
+private void HandleSelection(int segmentIndex)
+{
+    MenuMode selectedMode = (MenuMode)segmentIndex;
+    Debug.Log($"Selected mode: {selectedMode}");
+
+    // Disable previous mode
+    //DisableCurrentMode();
+
+    // Enable new mode
+    switch (selectedMode)
+    {
+        case MenuMode.Annotate:
+            Debug.Log("Annotation mode - Ready to place markers");
+            currentMode = MenuMode.Annotate;
+            break;
+
+        case MenuMode.Passthrough:
+            Debug.Log("Switching to Museum Scene");
+            StartCoroutine(SwitchToMuseum());
+            break;
+
+        case MenuMode.Clear:
+            if (domainBoxCreator != null)
+            {
+                domainBoxCreator.ResetDomain();
+                Debug.Log("Scene cleared");
+            }
+            currentMode = (MenuMode)(-1); // Reset to no mode
+            break;
+
+        case MenuMode.Scan:
+            if (scanController != null)
+            {
+                scanController.StartScan();
+                Debug.Log("Starting scan sequence");
+            }
+            currentMode = MenuMode.Scan;
+            break;
+
+        case MenuMode.DomainBox:
+            if (domainBoxCreator != null)
+            {
+                domainBoxCreator.enabled = true;
+                Debug.Log("Domain Box Creation mode enabled");
+            }
+            currentMode = MenuMode.DomainBox;
+            break;
+    }
+}
 
     private void OnDestroy()
     {
-        if (stylusInteractable != null)
-        {
-            stylusInteractable.selectEntered.RemoveListener(OnStylusGrabbed);
-            stylusInteractable.selectExited.RemoveListener(OnStylusReleased);
-        }
         SetMenuActive(false);
     }
+    private IEnumerator SwitchToMuseum()
+    {
+        // Optional: Add fade effect or transition here
+        yield return new WaitForSeconds(0.5f);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Museum_Scene");
+    }
+
 }
