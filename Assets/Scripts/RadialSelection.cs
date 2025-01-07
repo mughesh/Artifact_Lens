@@ -334,7 +334,7 @@ private void HandleSelection(int segmentIndex)
     {
         // Optional: Add fade effect or transition here
         yield return new WaitForSeconds(0.5f);
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Museum_Scene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Gallery");
     }
 
 }

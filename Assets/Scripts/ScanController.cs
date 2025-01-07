@@ -27,6 +27,13 @@ public class ScanController : MonoBehaviour
     [SerializeField] private InputActionProperty buttonBAction;
     [SerializeField] private float stylusProximityDistance = 0.1f;
 
+    [Header("AI References")]
+    [SerializeField] private GameObject aiVFXPrefab;
+    [SerializeField] private Transform aiSpawnPoint;  // Optional - can use coffin position if not set
+    [SerializeField] private float aiSpawnDelay = 0.5f;  // Delay before showing analysis panel
+    private GameObject spawnedAI;
+
+
     private enum ScanState
     {
         NotStarted,
@@ -212,10 +219,9 @@ public class ScanController : MonoBehaviour
 
     private void ShowAIAnalysis()
     {
-        StartCoroutine(AnimateUIPanel(scanCompletePanel, false));
-        StartCoroutine(AnimateUIPanel(aiAnalysisPanel, true));
+
+        StartCoroutine(AIAnalysisSequence());
         
-        currentState = ScanState.AIAnalysis;
         Debug.Log("Showing AI analysis");
     }
 
@@ -258,5 +264,32 @@ public class ScanController : MonoBehaviour
         {
             panel.gameObject.SetActive(false);
         }
+    }
+
+      private IEnumerator AIAnalysisSequence()
+    {
+        // Hide scan complete panel
+        StartCoroutine(AnimateUIPanel(scanCompletePanel, false));
+        
+        // Wait for panel to fade out
+        yield return new WaitForSeconds(0.5f);
+        
+        // Spawn AI VFX
+        Vector3 spawnPosition = aiSpawnPoint != null ? 
+            aiSpawnPoint.position : 
+            coffinRoot.position + Vector3.up * 1.5f;  // Default spawn above coffin
+            
+        spawnedAI = Instantiate(aiVFXPrefab, spawnPosition, Quaternion.identity);
+        
+        // Optional: Add spawn effects or animations here
+        
+        // Wait before showing analysis panel
+        yield return new WaitForSeconds(aiSpawnDelay);
+        
+        // Show AI analysis panel
+        StartCoroutine(AnimateUIPanel(aiAnalysisPanel, true));
+        
+        currentState = ScanState.AIAnalysis;
+        Debug.Log("AI spawned and analysis shown");
     }
 }

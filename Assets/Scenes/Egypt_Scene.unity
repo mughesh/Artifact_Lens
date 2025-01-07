@@ -122,6 +122,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &3739260
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3739261}
+  m_Layer: 0
+  m_Name: AI SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3739261
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3739260}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.891, y: 1.739, z: 1.954}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &7784601 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5686134208185136512, guid: 1fd3a7c43c8190f4d8c167ebde694364,
@@ -2682,6 +2713,10 @@ MonoBehaviour:
     m_Reference: {fileID: -2148725401063796242, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   stylusProximityDistance: 0.1
+  aiVFXPrefab: {fileID: 5650487766176664312, guid: 52056232ca5b6164789c1800594c5bd0,
+    type: 3}
+  aiSpawnPoint: {fileID: 3739261}
+  aiSpawnDelay: 0.5
 --- !u!4 &1273391529
 Transform:
   m_ObjectHideFlags: 0
@@ -2921,7 +2956,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1343286283}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.936}
+  m_LocalPosition: {x: 0, y: 0, z: 1.856}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -4191,3 +4226,4 @@ SceneRoots:
   - {fileID: 2017384865}
   - {fileID: 1832793110997371681}
   - {fileID: 1343286287}
+  - {fileID: 3739261}
