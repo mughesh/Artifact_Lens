@@ -49,7 +49,7 @@ public class ScanController : MonoBehaviour
         
         // Initialize object states
         if (redMarksRoot != null) redMarksRoot.gameObject.SetActive(false);
-        if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
+        //if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
         
         // Initialize UI states
         SetupUI();
@@ -169,7 +169,7 @@ public class ScanController : MonoBehaviour
         
         // Enable red marks and glyphs
         if (redMarksRoot != null) redMarksRoot.gameObject.SetActive(true);
-        if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(true);
+        //if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(true);
         
         // Show instructions UI
         StartCoroutine(AnimateUIPanel(instructionsPanel, true));
@@ -201,7 +201,7 @@ public class ScanController : MonoBehaviour
         
         // Disable red marks and glyphs
         if (redMarksRoot != null) redMarksRoot.gameObject.SetActive(false);
-        if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
+        //if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
         
         // Show scan complete UI
         StartCoroutine(AnimateUIPanel(scanCompletePanel, true));
