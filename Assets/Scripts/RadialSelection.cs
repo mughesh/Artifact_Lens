@@ -209,7 +209,7 @@ public class RadialSelection : MonoBehaviour
             if (hoveredSegment >= 0 && hoveredSegment < radialSegments.Length)
             {
                 radialSegments[hoveredSegment].GetComponent<Image>().color = hoverColor;
-                Debug.Log($"Hovering over segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
+                //Debug.Log($"Hovering over segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
             }
         }
     }

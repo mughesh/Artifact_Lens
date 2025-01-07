@@ -1380,6 +1380,77 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &680930408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 680930409}
+  - component: {fileID: 680930410}
+  - component: {fileID: 680930411}
+  m_Layer: 0
+  m_Name: TriggerTip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &680930409
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680930408}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1649282653}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &680930410
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680930408}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.01
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &680930411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680930408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5649a406c94167d43a01f6358210bb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  glowPlanePrefab: {fileID: 8426027273469758698, guid: c99bccaaf81791c43bb36dd75f552f6e,
+    type: 3}
+  stylusTip: {fileID: 1649282653}
+  glowSize: 0.03
+  offsetDistance: 0.001
 --- !u!1 &822855770
 GameObject:
   m_ObjectHideFlags: 0
@@ -1628,6 +1699,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 847228188}
+    - targetCorrespondingSourceObject: {fileID: 6677534815756556481, guid: cb1310f64dd794703964833b63e87d96,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 680930409}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1077171487981709975, guid: cb1310f64dd794703964833b63e87d96,
         type: 3}
@@ -1872,16 +1947,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a856bcf12a2a2489e3c86349cb6cb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glyphsParent: {fileID: 4107171339689403181}
-  revealDuration: 3
-  emissionThreshold: 0.8
-  emissionColor:
-    r: 0
-    g: 0.003921569
-    b: 0.7490196
-    a: 1
-  maxEmissionIntensity: 3
-  glyphs: []
 --- !u!4 &1023762133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5686134208185136526, guid: 1fd3a7c43c8190f4d8c167ebde694364,
@@ -3642,11 +3707,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1513300030}
     m_Modifications:
+    - target: {fileID: 430555169067321578, guid: 2f27672bc6ea2c742986951ac530d0c1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 937353877058500357, guid: 2f27672bc6ea2c742986951ac530d0c1,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5aed231c09886714bbfcd510b7b2f1f8, type: 2}
+    - target: {fileID: 1617781908696037730, guid: 2f27672bc6ea2c742986951ac530d0c1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2201912080184528978, guid: 2f27672bc6ea2c742986951ac530d0c1,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -3671,6 +3746,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 'Ankh-Khonsu '
+      objectReference: {fileID: 0}
+    - target: {fileID: 6758644256823176621, guid: 2f27672bc6ea2c742986951ac530d0c1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7125975582735906760, guid: 2f27672bc6ea2c742986951ac530d0c1,
         type: 3}
@@ -3721,6 +3801,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445118306252373520, guid: 2f27672bc6ea2c742986951ac530d0c1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
