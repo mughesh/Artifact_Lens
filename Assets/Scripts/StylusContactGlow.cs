@@ -20,13 +20,13 @@ public class StylusContactGlow : MonoBehaviour
     
     private void Start()
     {
-        Debug.Log($"StylusContactGlow initialized on {gameObject.name}");
+        //Debug.Log($"StylusContactGlow initialized on {gameObject.name}");
         
         // Verify collider setup
         var collider = GetComponent<SphereCollider>();
         if (collider)
         {
-            Debug.Log($"Collider found: IsTrigger={collider.isTrigger}, Radius={collider.radius}");
+           // Debug.Log($"Collider found: IsTrigger={collider.isTrigger}, Radius={collider.radius}");
         }
         else
         {
@@ -77,13 +77,13 @@ public class StylusContactGlow : MonoBehaviour
         UpdateGlowPosition(contactPoint, normal);
         isInContact = true;
         
-        Debug.Log($"Trigger Stay: Contact at {contactPoint}, Normal: {normal}"); // Debug log
+       // Debug.Log($"Trigger Stay: Contact at {contactPoint}, Normal: {normal}"); // Debug log
     }
 
     private void OnTriggerExit(Collider other)
     {
         isInContact = false;
-        Debug.Log("Trigger Exit"); // Debug log
+        //Debug.Log("Trigger Exit"); // Debug log
     }
 
     private void UpdateGlowPosition(Vector3 contactPoint, Vector3 normal)

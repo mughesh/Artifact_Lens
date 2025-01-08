@@ -56,6 +56,8 @@ public class DomainBoxCreator : MonoBehaviour
     private void Start()
     {
         InitializeBox();
+        enabled = false;  // Start disabled by default
+
     }
 
     private void InitializeBox()

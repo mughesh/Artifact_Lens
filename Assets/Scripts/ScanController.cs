@@ -203,6 +203,7 @@ public class ScanController : MonoBehaviour
 
     private void ShowScanComplete()
     {
+        glyphsRoot.gameObject.SetActive(false);
         // Hide instructions panel
         StartCoroutine(AnimateUIPanel(instructionsPanel, false));
         

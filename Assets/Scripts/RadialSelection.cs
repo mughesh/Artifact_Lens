@@ -23,6 +23,7 @@ public class RadialSelection : MonoBehaviour
     [Header("Mode References")]
     [SerializeField] private DomainBoxCreator domainBoxCreator;
     [SerializeField] private ScanController scanController;
+    [SerializeField] private AnnotationManager annotationManager;
 
     [Header("Menu Items")]
     public MenuIconData[] menuIcons = new MenuIconData[5];
@@ -290,6 +291,10 @@ private void HandleSelection(int segmentIndex)
         case MenuMode.Annotate:
             Debug.Log("Annotation mode - Ready to place markers");
             currentMode = MenuMode.Annotate;
+            if (annotationManager != null)
+            {
+                annotationManager.StartAnnotationMode();
+            }
             break;
 
         case MenuMode.Passthrough:
@@ -323,6 +328,7 @@ private void HandleSelection(int segmentIndex)
             }
             currentMode = MenuMode.DomainBox;
             break;
+                        
     }
 }
 
