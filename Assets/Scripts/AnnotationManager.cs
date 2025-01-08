@@ -1,31 +1,44 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using TMPro;
 
 public class AnnotationManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject anchorPrefab;
-    [SerializeField] private GameObject calloutPrefab;
+    [SerializeField] private GameObject annotationUIPanel; // Reference to your existing UI panel
     [SerializeField] private Transform stylusTip;
     [SerializeField] private InputActionProperty triggerAction;
-    [SerializeField] private Canvas worldSpaceCanvas;
     
-
+    [Header("Line Renderer Settings")]
+    [SerializeField] private LineRenderer existingLineRenderer; // Reference to your UI's line renderer
+    
     [Header("Settings")]
     [SerializeField] private float previewAlpha = 0.5f;
-    [SerializeField] private Color lineColor = Color.white;
-    [SerializeField] private float calloutOffset = 0.2f;
-
+    
     private GameObject currentAnchorPreview;
+    private GameObject placedAnchor;
     private bool isAnnotationMode;
+    private bool hasPlacedAnchor;
+    private RectTransform uiRectTransform;
+
+    private void Start()
+    {
+        if (annotationUIPanel != null)
+        {
+            uiRectTransform = annotationUIPanel.GetComponent<RectTransform>();
+            annotationUIPanel.SetActive(false);
+        }
+        
+        if (existingLineRenderer != null)
+        {
+            existingLineRenderer.enabled = false;
+        }
+    }
 
     private void OnEnable()
     {
         triggerAction.action.Enable();
         triggerAction.action.performed += OnTriggerPressed;
-        Debug.Log("AnnotationManager enabled");
     }
 
     private void OnDisable()
@@ -37,6 +50,7 @@ public class AnnotationManager : MonoBehaviour
     public void StartAnnotationMode()
     {
         isAnnotationMode = true;
+        hasPlacedAnchor = false;
         CreateAnchorPreview();
     }
 
@@ -47,100 +61,85 @@ public class AnnotationManager : MonoBehaviour
         {
             Destroy(currentAnchorPreview);
         }
+        
+        // Hide UI and line renderer
+        if (annotationUIPanel != null)
+        {
+            annotationUIPanel.SetActive(false);
+        }
+        if (existingLineRenderer != null)
+        {
+            existingLineRenderer.enabled = false;
+        }
+        
+        hasPlacedAnchor = false;
+        placedAnchor = null;
     }
 
     private void Update()
     {
-        if (isAnnotationMode && currentAnchorPreview)
+        if (isAnnotationMode && currentAnchorPreview && !hasPlacedAnchor)
         {
             currentAnchorPreview.transform.position = stylusTip.position;
+        }
+        
+        UpdateLineRenderer();
+    }
+
+    private void UpdateLineRenderer()
+    {
+        if (!hasPlacedAnchor || placedAnchor == null || existingLineRenderer == null || !annotationUIPanel.activeSelf)
+            return;
+
+        // Set line start point at anchor
+        existingLineRenderer.SetPosition(0, placedAnchor.transform.position);
+        
+        // Calculate bottom center of UI panel for line end point
+        if (uiRectTransform != null)
+        {
+            Vector3 bottomCenter = uiRectTransform.position - (uiRectTransform.up * (uiRectTransform.rect.height * 0.5f));
+            existingLineRenderer.SetPosition(1, bottomCenter);
         }
     }
 
     private void CreateAnchorPreview()
     {
-        currentAnchorPreview = Instantiate(anchorPrefab, stylusTip.position, Quaternion.identity);
-        
-        // Make preview semi-transparent
-        var renderers = currentAnchorPreview.GetComponentsInChildren<Renderer>();
-        foreach (var renderer in renderers)
+        if (!hasPlacedAnchor)
         {
-            Material material = renderer.material;
-            Color color = material.color;
-            color.a = previewAlpha;
-            material.color = color;
+            currentAnchorPreview = Instantiate(anchorPrefab, stylusTip.position, Quaternion.identity);
+            
+            // Make preview semi-transparent
+            var renderers = currentAnchorPreview.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                Material material = renderer.material;
+                Color color = material.color;
+                color.a = previewAlpha;
+                material.color = color;
+            }
         }
     }
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        Debug.Log("Trigger pressed");
-        if (!isAnnotationMode || !currentAnchorPreview) return;
+        if (!isAnnotationMode || !currentAnchorPreview || hasPlacedAnchor) return;
 
         // Create permanent anchor
-        GameObject anchor = Instantiate(anchorPrefab, currentAnchorPreview.transform.position, Quaternion.identity);
+        placedAnchor = Instantiate(anchorPrefab, currentAnchorPreview.transform.position, Quaternion.identity);
         
-        // Create callout
-        CreateCallout(anchor.transform);
+        // Enable UI and line renderer
+        if (annotationUIPanel != null)
+        {
+            annotationUIPanel.SetActive(true);
+        }
+        if (existingLineRenderer != null)
+        {
+            existingLineRenderer.enabled = true;
+        }
 
-        // Reset preview
+        // Clean up preview
         Destroy(currentAnchorPreview);
-        CreateAnchorPreview();
-    }
-
-    private void CreateCallout(Transform anchor)
-    {
-        // Spawn callout UI
-        GameObject callout = Instantiate(calloutPrefab, worldSpaceCanvas.transform);
-        
-        // Position callout to the right of the anchor with offset
-        Vector3 calloutPosition = anchor.position + (Camera.main.transform.right * calloutOffset);
-        callout.transform.position = calloutPosition;
-
-        // Set up line renderer between anchor and callout
-        LineRenderer line = callout.GetComponent<LineRenderer>();
-        if (line)
-        {
-            line.startColor = line.endColor = lineColor;
-            line.positionCount = 2;
-            
-            // Update line positions
-            CalloutController controller = callout.GetComponent<CalloutController>();
-            if (controller)
-            {
-                controller.Initialize(anchor, line);
-            }
-        }
-    }
-}
-
-public class CalloutController : MonoBehaviour
-{
-    private Transform anchorTransform;
-    private LineRenderer lineRenderer;
-    private RectTransform rectTransform;
-
-    public void Initialize(Transform anchor, LineRenderer line)
-    {
-        anchorTransform = anchor;
-        lineRenderer = line;
-        rectTransform = GetComponent<RectTransform>();
-        
-        // Update line positions immediately
-        UpdateLinePositions();
-    }
-
-    private void Update()
-    {
-        if (anchorTransform && lineRenderer)
-        {
-            UpdateLinePositions();
-        }
-    }
-
-    private void UpdateLinePositions()
-    {
-        lineRenderer.SetPosition(0, anchorTransform.position);
-        lineRenderer.SetPosition(1, rectTransform.position);
+        hasPlacedAnchor = true;
+        currentAnchorPreview = null;
     }
 }
