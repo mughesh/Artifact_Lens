@@ -6762,9 +6762,13 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: -7714890622676709274, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
-  defaultColor: {r: 0, g: 1, b: 1, a: 1}
+  aiVFXGraph: {fileID: 2144239510}
+  defaultColor: {r: 0.80838215, g: 6.847472, b: 9.082411, a: 0}
   activeColor: {r: 1, g: 0, b: 1, a: 1}
-  colorTransitionSpeed: 5
+  defaultTrailColor: {r: 9.082411, g: 2.3775945, b: 0.80838215, a: 0}
+  activeTrailColor: {r: 1, g: 0, b: 0.5, a: 1}
+  defaultBeamColor: {r: 0, g: 12.125731, b: 12.125731, a: 0}
+  activeBeamColor: {r: 1, g: 0, b: 1, a: 1}
 --- !u!4 &1234740573
 Transform:
   m_ObjectHideFlags: 0
@@ -8927,7 +8931,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -2148725401063796242, guid: c348712bda248c246b8c49b3db54643f,
+    m_Reference: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   buttonBAction:
     m_UseReference: 1
@@ -10479,7 +10483,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f,
+    m_Reference: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   existingLineRenderer: {fileID: 771296443}
   previewAlpha: 0.5

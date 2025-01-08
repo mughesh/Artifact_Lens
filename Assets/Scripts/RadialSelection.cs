@@ -93,7 +93,7 @@ public class RadialSelection : MonoBehaviour
         if (scanController != null) scanController.enabled = false;
         if (annotationManager != null) annotationManager.StopAnnotationMode();
         currentMode = MenuMode.None;
-        domainBoxCreator.gameObject.SetActive(false);
+        
     }
 
      private void CreateRadials()
@@ -350,7 +350,6 @@ public class RadialSelection : MonoBehaviour
             case MenuMode.DomainBox:
                 if (domainBoxCreator != null)
                 {
-                    domainBoxCreator.gameObject.SetActive(true);
                     domainBoxCreator.enabled = true;
                     currentMode = MenuMode.DomainBox;
                     Debug.Log("Domain Box Creation mode enabled");

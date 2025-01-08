@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.VFX;
 
 public class AIController : MonoBehaviour
 {
@@ -14,9 +15,21 @@ public class AIController : MonoBehaviour
     [SerializeField] private InputActionProperty buttonYAction;
     
     [Header("VFX Settings")]
-    [SerializeField] private Color defaultColor = Color.cyan;
-    [SerializeField] private Color activeColor = Color.magenta;
-    [SerializeField] private float colorTransitionSpeed = 5f;
+    [SerializeField] private VisualEffect aiVFXGraph;
+
+        [Header("Color Properties")]
+    [ColorUsage(true, true)] // Enables HDR color picker
+    [SerializeField] private Color defaultColor = new Color(0.5f, 1f, 1f, 1f);
+    [ColorUsage(true, true)]
+    [SerializeField] private Color activeColor = new Color(1f, 0.5f, 1f, 1f);
+    [ColorUsage(true, true)]
+    [SerializeField] private Color defaultTrailColor = new Color(1f, 0.5f, 0f, 1f);
+    [ColorUsage(true, true)]
+    [SerializeField] private Color activeTrailColor = new Color(1f, 0f, 0.5f, 1f);
+    [ColorUsage(true, true)]
+    [SerializeField] private Color defaultBeamColor = new Color(0f, 1f, 1f, 1f);
+    [ColorUsage(true, true)]
+    [SerializeField] private Color activeBeamColor = new Color(1f, 0f, 1f, 1f);
     
     private int currentSpawnIndex = -1;
     private bool isAIActive = false;
@@ -71,7 +84,7 @@ public class AIController : MonoBehaviour
             aiVFXPrefab.SetActive(true);
             aiVFXPrefab.transform.position = spawnPoints[currentSpawnIndex].position;
             isAIActive = true;
-            UpdateVFXColor(defaultColor);
+            UpdateVFXColor(isListening);
         }
     }
     
@@ -116,7 +129,7 @@ public class AIController : MonoBehaviour
         if (isAIActive)
         {
             isListening = true;
-            UpdateVFXColor(activeColor);
+            UpdateVFXColor(isListening);
         }
     }
     
@@ -125,19 +138,22 @@ public class AIController : MonoBehaviour
         if (isAIActive)
         {
             isListening = false;
-            UpdateVFXColor(defaultColor);
+            UpdateVFXColor(isListening);
         }
     }
     
-    private void UpdateVFXColor(Color targetColor)
+    private void UpdateVFXColor(bool isActive)
     {
-        if (vfxSystems != null)
+        if (aiVFXGraph != null)
         {
-            foreach (var vfx in vfxSystems)
-            {
-                var main = vfx.main;
-                main.startColor = targetColor;
-            }
+            // Update main color
+            aiVFXGraph.SetVector4("Color", isActive ? activeColor : defaultColor);
+            
+            // Update trail color
+            aiVFXGraph.SetVector4("TrailColor", isActive ? activeTrailColor : defaultTrailColor);
+            
+            // Update beam color
+            aiVFXGraph.SetVector4("BeamColor", isActive ? activeBeamColor : defaultBeamColor);
         }
     }
 }
