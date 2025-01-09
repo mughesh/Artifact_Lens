@@ -92,6 +92,7 @@ public class RadialSelection : MonoBehaviour
         if (domainBoxCreator != null) domainBoxCreator.enabled = false;
         if (scanController != null) scanController.enabled = false;
         if (annotationManager != null) annotationManager.StopAnnotationMode();
+        annotationManager.enabled = false;
         currentMode = MenuMode.None;
         
     }
@@ -317,6 +318,7 @@ public class RadialSelection : MonoBehaviour
             case MenuMode.Annotate:
                 if (annotationManager != null)
                 {
+                    annotationManager.enabled = true;
                     annotationManager.StartAnnotationMode();
                     currentMode = MenuMode.Annotate;
                     Debug.Log("Annotation mode enabled");

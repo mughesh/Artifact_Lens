@@ -4,41 +4,32 @@ using UnityEngine.InputSystem;
 public class AnnotationManager : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private GameObject anchorPrefab;
-    [SerializeField] private GameObject annotationUIPanel; // Reference to your existing UI panel
+    [SerializeField] private GameObject pinPrefab;
+    [SerializeField] private GameObject lineRendererPrefab;
     [SerializeField] private Transform stylusTip;
     [SerializeField] private InputActionProperty triggerAction;
     
-    [Header("Line Renderer Settings")]
-    [SerializeField] private LineRenderer existingLineRenderer; // Reference to your UI's line renderer
-    
-    [Header("Settings")]
-    [SerializeField] private float previewAlpha = 0.5f;
-    
-    private GameObject currentAnchorPreview;
-    private GameObject placedAnchor;
-    private bool isAnnotationMode;
-    private bool hasPlacedAnchor;
-    private RectTransform uiRectTransform;
+    [Header("UI References")]
+    [SerializeField] private CanvasGroup emptyAnnotationCanvas;
+    [SerializeField] private CanvasGroup aiInputAnnotationCanvas;
+    [SerializeField] private GameObject switchButton;
 
-    private void Start()
-    {
-        if (annotationUIPanel != null)
-        {
-            uiRectTransform = annotationUIPanel.GetComponent<RectTransform>();
-            annotationUIPanel.SetActive(false);
-        }
-        
-        if (existingLineRenderer != null)
-        {
-            existingLineRenderer.enabled = false;
-        }
-    }
+    
+    private GameObject activePin;
+    private GameObject pinPreview;
+    private GameObject currentLineRenderer;
+    private bool isAnnotationMode = false;
+    private bool hasPinPlaced = false;
+    private Transform currentLineEndPoint;
 
     private void OnEnable()
     {
         triggerAction.action.Enable();
         triggerAction.action.performed += OnTriggerPressed;
+        
+        // Ensure UIs start hidden
+        emptyAnnotationCanvas.gameObject.SetActive(false);
+        aiInputAnnotationCanvas.gameObject.SetActive(false);
     }
 
     private void OnDisable()
@@ -47,99 +38,125 @@ public class AnnotationManager : MonoBehaviour
         triggerAction.action.performed -= OnTriggerPressed;
     }
 
+    private void Update()
+    {
+        if (isAnnotationMode && !hasPinPlaced)
+        {
+            UpdatePinPreview();
+        }
+
+        if (hasPinPlaced && activePin != null)
+        {
+            UpdateLineRenderer();
+        }
+
+        CheckSwitchButtonProximity();
+    }
+
     public void StartAnnotationMode()
     {
         isAnnotationMode = true;
-        hasPlacedAnchor = false;
-        CreateAnchorPreview();
+        hasPinPlaced = false;
+        CreatePinPreview();
     }
 
     public void StopAnnotationMode()
     {
         isAnnotationMode = false;
-        if (currentAnchorPreview)
+        if (pinPreview != null)
         {
-            Destroy(currentAnchorPreview);
-        }
-        
-        // Hide UI and line renderer
-        if (annotationUIPanel != null)
-        {
-            annotationUIPanel.SetActive(false);
-        }
-        if (existingLineRenderer != null)
-        {
-            existingLineRenderer.enabled = false;
-        }
-        
-        hasPlacedAnchor = false;
-        placedAnchor = null;
-    }
-
-    private void Update()
-    {
-        if (isAnnotationMode && currentAnchorPreview && !hasPlacedAnchor)
-        {
-            currentAnchorPreview.transform.position = stylusTip.position;
-        }
-        
-        UpdateLineRenderer();
-    }
-
-    private void UpdateLineRenderer()
-    {
-        if (!hasPlacedAnchor || placedAnchor == null || existingLineRenderer == null || !annotationUIPanel.activeSelf)
-            return;
-
-        // Set line start point at anchor
-        existingLineRenderer.SetPosition(0, placedAnchor.transform.position);
-        
-        // Calculate bottom center of UI panel for line end point
-        if (uiRectTransform != null)
-        {
-            Vector3 bottomCenter = uiRectTransform.position - (uiRectTransform.up * (uiRectTransform.rect.height * 0.5f));
-            existingLineRenderer.SetPosition(1, bottomCenter);
+            Destroy(pinPreview);
         }
     }
 
-    private void CreateAnchorPreview()
+    private void CreatePinPreview()
     {
-        if (!hasPlacedAnchor)
+        if (pinPreview == null)
         {
-            currentAnchorPreview = Instantiate(anchorPrefab, stylusTip.position, Quaternion.identity);
-            
-            // Make preview semi-transparent
-            var renderers = currentAnchorPreview.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                Material material = renderer.material;
-                Color color = material.color;
-                color.a = previewAlpha;
-                material.color = color;
-            }
+            pinPreview = Instantiate(pinPrefab);
+        }
+    }
+
+    private void UpdatePinPreview()
+    {
+        if (pinPreview != null)
+        {
+            pinPreview.transform.position = stylusTip.position;
         }
     }
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        if (!isAnnotationMode || !currentAnchorPreview || hasPlacedAnchor) return;
+        if (isAnnotationMode && !hasPinPlaced)
+        {
+            PlacePin();
+        }
+    }
 
-        // Create permanent anchor
-        placedAnchor = Instantiate(anchorPrefab, currentAnchorPreview.transform.position, Quaternion.identity);
+    private void PlacePin()
+    {
+        activePin = Instantiate(pinPrefab, stylusTip.position, Quaternion.identity);
+        currentLineRenderer = Instantiate(lineRendererPrefab);
         
-        // Enable UI and line renderer
-        if (annotationUIPanel != null)
-        {
-            annotationUIPanel.SetActive(true);
-        }
-        if (existingLineRenderer != null)
-        {
-            existingLineRenderer.enabled = true;
-        }
+        ShowEmptyAnnotation();
+        
+        Destroy(pinPreview);
+        hasPinPlaced = true;
+    }
 
-        // Clean up preview
-        Destroy(currentAnchorPreview);
-        hasPlacedAnchor = true;
-        currentAnchorPreview = null;
+    private void ShowEmptyAnnotation()
+    {
+        emptyAnnotationCanvas.gameObject.SetActive(true);
+        aiInputAnnotationCanvas.gameObject.SetActive(false);
+        
+        // Find line render point in empty annotation canvas
+        Transform lineRenderPoint = emptyAnnotationCanvas.transform.Find("LineRenderPoint");
+        if (lineRenderPoint != null)
+        {
+            currentLineEndPoint = lineRenderPoint;
+        }
+    }
+
+    private void ShowAIAnnotation()
+    {
+        emptyAnnotationCanvas.gameObject.SetActive(false);
+        aiInputAnnotationCanvas.gameObject.SetActive(true);
+        
+        // Find line render point in AI annotation canvas
+        Transform lineRenderPoint = aiInputAnnotationCanvas.transform.Find("LineRenderPoint");
+        if (lineRenderPoint != null)
+        {
+            currentLineEndPoint = lineRenderPoint;
+        }
+    }
+
+    private void UpdateLineRenderer()
+    {
+        if (currentLineRenderer != null)
+        {
+            LineRenderer lineRenderer = currentLineRenderer.GetComponent<LineRenderer>();
+            Transform anchorPoint = activePin.transform.Find("AnchorPoint");
+            
+            if (lineRenderer != null && anchorPoint != null && currentLineEndPoint != null)
+            {
+                lineRenderer.positionCount = 2;
+                lineRenderer.SetPosition(0, anchorPoint.position);
+                lineRenderer.SetPosition(1, currentLineEndPoint.position);
+            }
+        }
+    }
+
+    private void CheckSwitchButtonProximity()
+    {
+        if (switchButton != null && switchButton.activeSelf && hasPinPlaced)
+        {
+            float distance = Vector3.Distance(stylusTip.position, switchButton.transform.position);
+            if (distance < 0.05f) // Adjust threshold as needed
+            {
+                Debug.Log("Switch button pressed");
+                ShowAIAnnotation();
+                switchButton.SetActive(false);
+            }
+        }
     }
 }
