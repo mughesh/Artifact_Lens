@@ -10,10 +10,13 @@ public class GallerySequenceManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject aiOutputUI;
 
-    [Header("Artifact References")]
+    [Header("Coffin References")]
     [SerializeField] private GameObject oldCoffin;
     [SerializeField] private GameObject newCoffin;
     [SerializeField] private Material hologramMaterial;
+
+    [Header("Pot References")]
+    [SerializeField] private Animator potAnimator;
 
     [Header("Effect Settings")]
     [SerializeField] private float hologramDuration = 2.5f;
@@ -24,32 +27,25 @@ public class GallerySequenceManager : MonoBehaviour
         Initial,
         UIShown,
         ReadyForReconstruction,
-        Completed
+        CoffinReconstructed,
+        PotReconstructed
     }
 
     private SequenceState currentState = SequenceState.Initial;
-    private Material[] originalMaterials;
 
     private void OnEnable()
     {
         buttonBAction.action.Enable();
         buttonBAction.action.performed += OnButtonBPressed;
 
-        // Store original materials for later restoration if needed
-        if (oldCoffin != null)
-        {
-            Renderer[] renderers = oldCoffin.GetComponentsInChildren<Renderer>();
-            originalMaterials = new Material[renderers.Length];
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                originalMaterials[i] = renderers[i].material;
-            }
-        }
-
-        // Ensure new coffin starts hidden
+        // Initialize scene state
         if (newCoffin != null)
         {
             newCoffin.SetActive(false);
+        }
+        if (aiOutputUI != null)
+        {
+            aiOutputUI.SetActive(false);
         }
     }
 
@@ -61,47 +57,66 @@ public class GallerySequenceManager : MonoBehaviour
 
     private void OnButtonBPressed(InputAction.CallbackContext context)
     {
+        Debug.Log($"B pressed in state: {currentState}");
+        
         switch (currentState)
         {
             case SequenceState.Initial:
-                ShowUI();
+                ShowAIOutput();
                 break;
+                
             case SequenceState.UIShown:
-                HideUI();
+                HideAIOutput();
                 break;
+                
             case SequenceState.ReadyForReconstruction:
-                StartReconstruction();
+                StartCoffinReconstruction();
+                break;
+                
+            case SequenceState.CoffinReconstructed:
+                StartPotReconstruction();
                 break;
         }
     }
 
-    private void ShowUI()
+    private void ShowAIOutput()
     {
         if (aiOutputUI != null)
         {
             aiOutputUI.SetActive(true);
             currentState = SequenceState.UIShown;
+            Debug.Log("AI Output UI shown");
         }
     }
 
-    private void HideUI()
+    private void HideAIOutput()
     {
         if (aiOutputUI != null)
         {
             aiOutputUI.SetActive(false);
             currentState = SequenceState.ReadyForReconstruction;
+            Debug.Log("AI Output UI hidden");
         }
     }
 
-    private void StartReconstruction()
+    private void StartCoffinReconstruction()
     {
-        StartCoroutine(ReconstructionSequence());
-        currentState = SequenceState.Completed;
+        StartCoroutine(CoffinReconstructionSequence());
+        Debug.Log("Starting coffin reconstruction");
     }
 
-    private IEnumerator ReconstructionSequence()
+    private void StartPotReconstruction()
     {
-        // Apply hologram effect
+        if (potAnimator != null)
+        {
+            StartCoroutine(PotReconstructionSequence());
+            Debug.Log("Starting pot reconstruction");
+        }
+    }
+
+    private IEnumerator CoffinReconstructionSequence()
+    {
+        // Apply hologram effect to old coffin
         if (oldCoffin != null && hologramMaterial != null)
         {
             Renderer[] renderers = oldCoffin.GetComponentsInChildren<Renderer>();
@@ -113,45 +128,65 @@ public class GallerySequenceManager : MonoBehaviour
 
         yield return new WaitForSeconds(hologramDuration);
 
-        // Hide old coffin and prepare new one
+        // Switch coffins
         oldCoffin.SetActive(false);
         newCoffin.SetActive(true);
 
-        // Get the renderers from the new coffin parts
+        // Get renderers from new coffin
         Renderer[] newCoffinRenderers = newCoffin.GetComponentsInChildren<Renderer>();
         
-        // Set initial dissolve value (1 = invisible)
+        // Set initial dissolve value (invisible)
         foreach (Renderer renderer in newCoffinRenderers)
         {
             renderer.material.SetFloat("_Dissolve_value", 1f);
         }
 
-        // Wait before starting dissolve effect
+        // Wait before starting dissolve
         yield return new WaitForSeconds(1f);
 
         // Animate dissolve effect
         float elapsedTime = 0f;
-        
         while (elapsedTime < dissolveDuration)
         {
             float normalizedTime = elapsedTime / dissolveDuration;
-            // Lerp from 1 to 0 (invisible to visible)
             float dissolveValue = Mathf.Lerp(1f, 0f, normalizedTime);
             
             foreach (Renderer renderer in newCoffinRenderers)
             {
                 renderer.material.SetFloat("_Dissolve_value", dissolveValue);
-                Debug.Log($"Setting dissolve value: {dissolveValue}");
             }
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Ensure final value is set
+        // Ensure final state
         foreach (Renderer renderer in newCoffinRenderers)
         {
             renderer.material.SetFloat("_Dissolve_value", 0f);
         }
+
+        currentState = SequenceState.CoffinReconstructed;
+        Debug.Log("Coffin reconstruction completed");
+    }
+
+    private IEnumerator PotReconstructionSequence()
+    {
+        // Trigger reconstruction animation
+        potAnimator.SetTrigger("Reconstruct");
+        Debug.Log("Triggered pot reconstruction animation");
+
+        // Wait for animation to complete
+        AnimatorStateInfo stateInfo;
+        do
+        {
+            stateInfo = potAnimator.GetCurrentAnimatorStateInfo(0);
+            yield return null;
+        } while (!stateInfo.IsName("Animate") || stateInfo.normalizedTime < 0.99f);
+
+        // Trigger end state
+        potAnimator.SetTrigger("End");
+        currentState = SequenceState.PotReconstructed;
+        Debug.Log("Pot reconstruction completed");
     }
 }
