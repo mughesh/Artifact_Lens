@@ -56,6 +56,8 @@ public class DomainBoxCreator : MonoBehaviour
     private void Start()
     {
         InitializeBox();
+        
+
     }
 
     private void InitializeBox()

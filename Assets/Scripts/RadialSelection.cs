@@ -23,10 +23,11 @@ public class RadialSelection : MonoBehaviour
     [Header("Mode References")]
     [SerializeField] private DomainBoxCreator domainBoxCreator;
     [SerializeField] private ScanController scanController;
+    [SerializeField] private AnnotationManager annotationManager;
 
     [Header("Menu Items")]
     public MenuIconData[] menuIcons = new MenuIconData[5];
-    private MenuMode currentMode = (MenuMode)(-1);
+   
 
     [Header("Visual Settings")]
     public Color defaultColor = Color.gray;
@@ -48,6 +49,7 @@ public class RadialSelection : MonoBehaviour
 
     public enum MenuMode
     {
+        None = -1,
         Annotate = 0,    // Top-right
         Passthrough = 1, // Top-left
         Clear = 2,       // Bottom-left
@@ -62,6 +64,14 @@ public class RadialSelection : MonoBehaviour
     private bool isMenuActive = false;
     private int hoveredSegment = -1;
     private Vector3 menuSpawnPosition;
+    private MenuMode currentMode = MenuMode.None;
+
+
+    private void Start()
+    {
+        // Ensure all features start disabled
+        DisableAllModes();
+    }
 
     private void OnEnable()
     {
@@ -75,6 +85,16 @@ public class RadialSelection : MonoBehaviour
         buttonAAction.action.Disable();
         buttonAAction.action.performed -= OnButtonAPressed;
         buttonAAction.action.canceled -= OnButtonAReleased;
+    }
+
+    private void DisableAllModes()
+    {
+        if (domainBoxCreator != null) domainBoxCreator.enabled = false;
+        if (scanController != null) scanController.enabled = false;
+        if (annotationManager != null) annotationManager.StopAnnotationMode();
+        annotationManager.enabled = false;
+        currentMode = MenuMode.None;
+        
     }
 
      private void CreateRadials()
@@ -209,7 +229,7 @@ public class RadialSelection : MonoBehaviour
             if (hoveredSegment >= 0 && hoveredSegment < radialSegments.Length)
             {
                 radialSegments[hoveredSegment].GetComponent<Image>().color = hoverColor;
-                Debug.Log($"Hovering over segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
+                //Debug.Log($"Hovering over segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
             }
         }
     }
@@ -276,55 +296,69 @@ public class RadialSelection : MonoBehaviour
         hoveredSegment = -1;
     }
 
-private void HandleSelection(int segmentIndex)
-{
-    MenuMode selectedMode = (MenuMode)segmentIndex;
-    Debug.Log($"Selected mode: {selectedMode}");
-
-    // Disable previous mode
-    //DisableCurrentMode();
-
-    // Enable new mode
-    switch (selectedMode)
+    private void HandleSelection(int segmentIndex)
     {
-        case MenuMode.Annotate:
-            Debug.Log("Annotation mode - Ready to place markers");
-            currentMode = MenuMode.Annotate;
-            break;
+        MenuMode selectedMode = (MenuMode)segmentIndex;
+        
+        // If selecting the same mode, treat it as deselection
+        if (selectedMode == currentMode)
+        {
+            DisableAllModes();
+            Debug.Log("Deselected current mode");
+            
+            return;
+        }
 
-        case MenuMode.Passthrough:
-            Debug.Log("Switching to Museum Scene");
-            StartCoroutine(SwitchToMuseum());
-            break;
+        // Disable all current modes first
+        DisableAllModes();
 
-        case MenuMode.Clear:
-            if (domainBoxCreator != null)
-            {
-                domainBoxCreator.ResetDomain();
-                Debug.Log("Scene cleared");
-            }
-            currentMode = (MenuMode)(-1); // Reset to no mode
-            break;
+        // Enable new mode
+        switch (selectedMode)
+        {
+            case MenuMode.Annotate:
+                if (annotationManager != null)
+                {
+                    annotationManager.enabled = true;
+                    annotationManager.StartAnnotationMode();
+                    currentMode = MenuMode.Annotate;
+                    Debug.Log("Annotation mode enabled");
+                }
+                break;
 
-        case MenuMode.Scan:
-            if (scanController != null)
-            {
-                scanController.StartScan();
-                Debug.Log("Starting scan sequence");
-            }
-            currentMode = MenuMode.Scan;
-            break;
+            case MenuMode.Passthrough:
+                Debug.Log("Switching to Museum Scene");
+                StartCoroutine(SwitchToMuseum());
+                break;
 
-        case MenuMode.DomainBox:
-            if (domainBoxCreator != null)
-            {
-                domainBoxCreator.enabled = true;
-                Debug.Log("Domain Box Creation mode enabled");
-            }
-            currentMode = MenuMode.DomainBox;
-            break;
+            case MenuMode.Clear:
+                if (domainBoxCreator != null)
+                {
+                    domainBoxCreator.ResetDomain();
+                    Debug.Log("Scene cleared");
+                }
+                currentMode = MenuMode.None;
+                break;
+
+            case MenuMode.Scan:
+                if (scanController != null)
+                {
+                    scanController.enabled = true;
+                    scanController.StartScan();
+                    currentMode = MenuMode.Scan;
+                    Debug.Log("Scan mode enabled");
+                }
+                break;
+
+            case MenuMode.DomainBox:
+                if (domainBoxCreator != null)
+                {
+                    domainBoxCreator.enabled = true;
+                    currentMode = MenuMode.DomainBox;
+                    Debug.Log("Domain Box Creation mode enabled");
+                }
+                break;
+        }
     }
-}
 
     private void OnDestroy()
     {
@@ -334,7 +368,7 @@ private void HandleSelection(int segmentIndex)
     {
         // Optional: Add fade effect or transition here
         yield return new WaitForSeconds(0.5f);
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Museum_Scene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Gallery");
     }
 
 }
