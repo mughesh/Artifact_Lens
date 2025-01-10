@@ -17,6 +17,10 @@ public class GallerySequenceManager : MonoBehaviour
 
     [Header("Pot References")]
     [SerializeField] private Animator potAnimator;
+    [SerializeField] private float partProcessingDelay = 0.1f;
+    [SerializeField] private float floatHeight = 0.5f;
+    [SerializeField] private float floatDuration = 2f;
+    [SerializeField] private float materialTransitionDuration = 1f;
 
     [Header("Effect Settings")]
     [SerializeField] private float hologramDuration = 2.5f;
@@ -172,11 +176,44 @@ public class GallerySequenceManager : MonoBehaviour
 
     private IEnumerator PotReconstructionSequence()
     {
-        // Trigger reconstruction animation
-        potAnimator.SetTrigger("Reconstruct");
-        Debug.Log("Triggered pot reconstruction animation");
+        if (potAnimator == null) yield break;
 
-        // Wait for animation to complete
+        Transform potRoot = potAnimator.transform;
+        Vector3 startPosition = potRoot.position;
+        Vector3 floatPosition = startPosition + Vector3.up * floatHeight;
+        
+        // Get all pot part renderers
+        Renderer[] potPartRenderers = potRoot.GetComponentsInChildren<Renderer>();
+        Material[][] originalMaterials = new Material[potPartRenderers.Length][];
+
+        // Store original materials and initially set hologram
+        for (int i = 0; i < potPartRenderers.Length; i++)
+        {
+            originalMaterials[i] = potPartRenderers[i].materials;
+            yield return new WaitForSeconds(partProcessingDelay);
+            
+            Material[] hologramMaterials = new Material[potPartRenderers[i].materials.Length];
+            for (int j = 0; j < hologramMaterials.Length; j++)
+            {
+                hologramMaterials[j] = hologramMaterial;
+            }
+            potPartRenderers[i].materials = hologramMaterials;
+        }
+
+        // Start reconstruction animation
+        potAnimator.SetTrigger("Reconstruct");
+
+        // Float up while reconstructing
+        float elapsedTime = 0f;
+        while (elapsedTime < floatDuration)
+        {
+            float t = elapsedTime / floatDuration;
+            potRoot.position = Vector3.Lerp(startPosition, floatPosition, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Wait for reconstruction animation to complete
         AnimatorStateInfo stateInfo;
         do
         {
@@ -188,5 +225,40 @@ public class GallerySequenceManager : MonoBehaviour
         potAnimator.SetTrigger("End");
         currentState = SequenceState.PotReconstructed;
         Debug.Log("Pot reconstruction completed");
+
+        // Transition back to original materials
+        elapsedTime = 0f;
+        while (elapsedTime < materialTransitionDuration)
+        {
+            float t = elapsedTime / materialTransitionDuration;
+            
+            // Update hologram material properties to fade out
+            // Assuming your hologram shader has a "_Transparency" property
+            hologramMaterial.SetFloat("_Transparency", 1 - t);
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Restore original materials
+        for (int i = 0; i < potPartRenderers.Length; i++)
+        {
+            potPartRenderers[i].materials = originalMaterials[i];
+        }
+
+        // Float back down
+        elapsedTime = 0f;
+        while (elapsedTime < floatDuration)
+        {
+            float t = elapsedTime / floatDuration;
+            potRoot.position = Vector3.Lerp(floatPosition, startPosition, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final position
+        potRoot.position = startPosition;
+
+
     }
 }

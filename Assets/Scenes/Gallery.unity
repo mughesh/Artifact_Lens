@@ -10526,8 +10526,12 @@ MonoBehaviour:
   newCoffin: {fileID: 5512484953341756645}
   hologramMaterial: {fileID: 2100000, guid: 95928c9f4b855ef428b015cc3281a738, type: 2}
   potAnimator: {fileID: 2804134232050525730}
+  partProcessingDelay: 0.05
+  floatHeight: 0.5
+  floatDuration: 3
+  materialTransitionDuration: 1
   hologramDuration: 3
-  dissolveDuration: 5
+  dissolveDuration: 3
 --- !u!4 &1785427330
 Transform:
   m_ObjectHideFlags: 0
