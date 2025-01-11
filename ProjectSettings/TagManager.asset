@@ -6,6 +6,7 @@ TagManager:
   tags:
   - RightHand
   - StylusTip
+  - UI
   layers:
   - Default
   - TransparentFX
