@@ -347,6 +347,7 @@ public class RadialSelection : MonoBehaviour
                     scanController.enabled = true;
                     scanController.StartScan();
                     currentMode = MenuMode.Scan;
+                    domainBoxCreator.ResetDomain();
                     Debug.Log("Scan mode enabled");
                 }
                 break;

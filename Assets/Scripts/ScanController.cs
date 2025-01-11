@@ -232,13 +232,13 @@ public class ScanController : MonoBehaviour
 
     private void ShowScanComplete()
     {
-        glyphsRoot.gameObject.SetActive(false);
+        //glyphsRoot.gameObject.SetActive(false);
         // Hide instructions panel
         StartCoroutine(AnimateUIPanel(instructionsPanel, false));
         
         // Disable red marks and glyphs
         if (redMarksRoot != null) redMarksRoot.gameObject.SetActive(false);
-        //if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
+        if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
         
         // Show scan complete UI
         StartCoroutine(AnimateUIPanel(scanCompletePanel, true));
