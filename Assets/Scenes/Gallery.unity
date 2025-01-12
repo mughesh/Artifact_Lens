@@ -1610,7 +1610,7 @@ GameObject:
   - component: {fileID: 84515754}
   - component: {fileID: 84515753}
   m_Layer: 5
-  m_Name: Heisenberg1
+  m_Name: Hector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2354,6 +2354,10 @@ PrefabInstance:
         type: 3}
       insertIndex: 1
       addedObject: {fileID: 774577030}
+    - targetCorrespondingSourceObject: {fileID: 7696548424635294051, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 746361558}
     - targetCorrespondingSourceObject: {fileID: 9014170785475729501, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       insertIndex: 0
@@ -8419,6 +8423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a450193850720644b23213d04888e8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  versionManager: {fileID: 851854072}
   menuAnchor: {fileID: 538660186}
   stylusTip: {fileID: 1031241363}
   menuRoot: {fileID: 610845895}
@@ -8436,7 +8441,7 @@ MonoBehaviour:
     m_Reference: {fileID: 3594996243445492754, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   menuOptions:
-  - name: Version History
+  - name: VersionHistory
     buttonBackground: {fileID: 373039953}
     text: {fileID: 434364826}
   - name: AI
@@ -9187,7 +9192,7 @@ GameObject:
   - component: {fileID: 562391003}
   - component: {fileID: 562391002}
   m_Layer: 5
-  m_Name: Heisenberg2
+  m_Name: Saul
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11850,6 +11855,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742121821}
   m_CullTransparentMesh: 1
+--- !u!1 &746361557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 746361558}
+  m_Layer: 2
+  m_Name: VerControl_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &746361558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746361557}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 1.186, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 120875182}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &747626508
 GameObject:
   m_ObjectHideFlags: 0
@@ -13609,7 +13645,7 @@ GameObject:
   - component: {fileID: 828040729}
   - component: {fileID: 828040728}
   m_Layer: 5
-  m_Name: Panel1 (2)
+  m_Name: Gustavo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13977,80 +14013,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee2f7413dbb48c4cb0f1d9b38a69c71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animSettings:
-    fadeInDuration: 0.3
-    scaleInDuration: 0.3
-    elementDelay: 0.1
-    startScale: {x: 0.8, y: 0.8, z: 0.8}
-    fadeCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    scaleCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  mainCamera: {fileID: 321817382}
   stylusTip: {fileID: 1031241363}
-  versionControlButton: {fileID: 1478188329}
-  versionListUI: {fileID: 2013192513}
+  versionListUI: {fileID: 259876287}
   lineRendererPrefab: {fileID: 694227917317706542, guid: 61a734100901e4642aac316302a00d3c,
     type: 3}
-  interactionDistance: 0.05
+  interactionDistance: 0.1
   buttonCooldown: 0.5
+  fadeInDuration: 0.3
+  elementDelay: 0.1
+  spawnPoint: {fileID: 746361558}
+  mainCamera: {fileID: 321817382}
+  listOffset: {x: 0.5, y: 0, z: 0}
+  updatePositionEveryFrame: 0
+  offset: {x: 0, y: 0, z: 0}
+  distanceFromRig: 1
+  heightOffset: 0
+  rotationSmoothSpeed: 5
   annotationGroups:
   - researcherName: Heisenberg1
     anchorGroup: {fileID: 727070383}
     annotationUIGroup: {fileID: 1268132448}
     researcherUIButton: {fileID: 84515750}
+    buttonBackground: {fileID: 84515751}
     activeLineRenderers: []
     isActive: 0
   - researcherName: Heisenberg2
     anchorGroup: {fileID: 752477176}
     annotationUIGroup: {fileID: 867872791}
     researcherUIButton: {fileID: 562391001}
+    buttonBackground: {fileID: 562391004}
     activeLineRenderers: []
     isActive: 0
+  - researcherName: Heisenberg2
+    anchorGroup: {fileID: 752477176}
+    annotationUIGroup: {fileID: 867872791}
+    researcherUIButton: {fileID: 562391001}
+    buttonBackground: {fileID: 562391004}
+    activeLineRenderers: []
+    isActive: 0
+  - researcherName: Heisenberg2
+    anchorGroup: {fileID: 752477176}
+    annotationUIGroup: {fileID: 867872791}
+    researcherUIButton: {fileID: 562391001}
+    buttonBackground: {fileID: 562391004}
+    activeLineRenderers: []
+    isActive: 0
+  defaultButtonColor: {r: 0.18431373, g: 0.23529412, b: 0.27058825, a: 0.8627451}
+  selectedButtonColor: {r: 0.1088002, g: 0.37107086, b: 0.97735846, a: 1}
 --- !u!4 &851854073
 Transform:
   m_ObjectHideFlags: 0
@@ -27715,7 +27724,7 @@ PrefabInstance:
     - target: {fileID: 4653059231322685360, guid: bbc58cb55eda8654697695dc5c1430fe,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.238
+      value: 0.053
       objectReference: {fileID: 0}
     - target: {fileID: 4653059231322685360, guid: bbc58cb55eda8654697695dc5c1430fe,
         type: 3}
@@ -29504,7 +29513,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1837833418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31951,10 +31960,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 84515750}
-  - {fileID: 562391001}
   - {fileID: 2094306267}
   - {fileID: 828040727}
+  - {fileID: 562391001}
+  - {fileID: 84515750}
   m_Father: {fileID: 259876291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -33644,7 +33653,7 @@ GameObject:
   - component: {fileID: 2094306269}
   - component: {fileID: 2094306268}
   m_Layer: 5
-  m_Name: Panel1 (3)
+  m_Name: Heisenberg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37383,10 +37392,10 @@ SceneRoots:
   - {fileID: 979244333}
   - {fileID: 1660826843}
   - {fileID: 766163603}
-  - {fileID: 535321216}
   - {fileID: 1825250803}
   - {fileID: 1234740573}
   - {fileID: 1785427330}
+  - {fileID: 535321216}
   - {fileID: 851854073}
   - {fileID: 1418505858}
   - {fileID: 1055355211}
