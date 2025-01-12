@@ -799,6 +799,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Left Menu",
+                    "type": "Button",
+                    "id": "f8aa674a-feb6-41d7-a665-34e9e61e167b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -986,6 +995,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "PrimaryButtonX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d769ca2d-7db1-45df-8de7-2bdf7ce8e192",
+                    "path": "<XRController>{LeftHand}/menu",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
