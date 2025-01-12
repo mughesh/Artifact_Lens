@@ -20,7 +20,8 @@ public class LeftHandMenuController : MonoBehaviour
     [SerializeField] private Transform stylusTip;
     [SerializeField] private GameObject menuRoot;
     [SerializeField] private InputActionProperty menuButton;
-    
+    [SerializeField] private AnnotationVersionManager versionManager;
+
     [Header("Menu Options")]
     [SerializeField] private MenuOption[] menuOptions;
     
@@ -32,6 +33,8 @@ public class LeftHandMenuController : MonoBehaviour
     private Camera mainCamera;
     private bool isMenuActive = false;
     private int hoveredIndex = -1;
+
+    private bool shouldTriggerSelection = false;
 
     private void Start()
     {
@@ -134,6 +137,7 @@ public class LeftHandMenuController : MonoBehaviour
 
     private void OnMenuButtonReleased(InputAction.CallbackContext context)
     {
+        shouldTriggerSelection = true;
         HideMenu();
     }
 
@@ -146,16 +150,46 @@ public class LeftHandMenuController : MonoBehaviour
 
     private void HideMenu()
     {
+        if (shouldTriggerSelection && hoveredIndex >= 0)
+        {
+            HandleMenuSelection(hoveredIndex);
+        }
+        
         isMenuActive = false;
         menuRoot.SetActive(false);
         
-        // Reset hover states
+        // Reset states
         if (hoveredIndex >= 0 && hoveredIndex < menuOptions.Length)
         {
             menuOptions[hoveredIndex].buttonBackground.color = defaultColor;
             menuOptions[hoveredIndex].text.gameObject.SetActive(false);
         }
         hoveredIndex = -1;
+        shouldTriggerSelection = false;
+    }
+
+    private void HandleMenuSelection(int index)
+    {
+        if (index >= 0 && index < menuOptions.Length)
+        {
+            string optionName = menuOptions[index].name;
+            
+            switch (optionName)
+            {
+                case "VersionHistory":
+                    if (versionManager != null)
+                    {
+                        versionManager.ToggleVersionList();
+                    }
+                    break;
+                case "AI":
+                    // Handle AI menu selection
+                    break;
+                case "Collaborate":
+                    // Handle collaborate menu selection
+                    break;
+            }
+        }
     }
 
     // Public method to assign callbacks
