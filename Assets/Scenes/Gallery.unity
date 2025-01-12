@@ -6031,6 +6031,12 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!20 &321817382 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 9014170783809206330, guid: 895f6f3c2d334633b5800312285058d2,
+    type: 3}
+  m_PrefabInstance: {fileID: 120875180}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &323485910
 GameObject:
   m_ObjectHideFlags: 0
@@ -8429,9 +8435,8 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 3594996243445492754, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
-  versionManager: {fileID: 851854072}
   menuOptions:
-  - name: VersionHistory
+  - name: Version History
     buttonBackground: {fileID: 373039953}
     text: {fileID: 434364826}
   - name: AI
@@ -13972,15 +13977,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee2f7413dbb48c4cb0f1d9b38a69c71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animSettings:
+    fadeInDuration: 0.3
+    scaleInDuration: 0.3
+    elementDelay: 0.1
+    startScale: {x: 0.8, y: 0.8, z: 0.8}
+    fadeCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    scaleCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  mainCamera: {fileID: 321817382}
   stylusTip: {fileID: 1031241363}
   versionControlButton: {fileID: 1478188329}
   versionListUI: {fileID: 2013192513}
   lineRendererPrefab: {fileID: 694227917317706542, guid: 61a734100901e4642aac316302a00d3c,
     type: 3}
-  interactionDistance: 0.1
+  interactionDistance: 0.05
   buttonCooldown: 0.5
-  fadeInDuration: 0.3
-  elementDelay: 0.1
   annotationGroups:
   - researcherName: Heisenberg1
     anchorGroup: {fileID: 727070383}
@@ -29447,7 +29504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1837833418
 MonoBehaviour:
   m_ObjectHideFlags: 0
