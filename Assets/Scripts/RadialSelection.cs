@@ -239,7 +239,7 @@ public class RadialSelection : MonoBehaviour
         menuSpawnPosition = stylusTip.position;
         radialParent.position = menuSpawnPosition;
         radialParent.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-        
+        //Debug.Log("Button A pressed");
         SetMenuActive(true);
     }
 
@@ -248,14 +248,16 @@ public class RadialSelection : MonoBehaviour
         if (hoveredSegment >= 0 && hoveredSegment < numberOfRadials)
         {
             HandleSelection(hoveredSegment);
+            //Debug.Log($"Selected segment: {hoveredSegment} ({(MenuMode)hoveredSegment})");
         }
+        //Debug.Log("Button A released");
         SetMenuActive(false);
     }
 
      private void SetMenuActive(bool active)
     {
         isMenuActive = active;
-        Debug.Log($"Menu active: {active}");
+        //Debug.Log($"Menu active: {active}");
 
         if (active)
         {
@@ -345,6 +347,7 @@ public class RadialSelection : MonoBehaviour
                     scanController.enabled = true;
                     scanController.StartScan();
                     currentMode = MenuMode.Scan;
+                    domainBoxCreator.ResetDomain();
                     Debug.Log("Scan mode enabled");
                 }
                 break;
@@ -362,6 +365,7 @@ public class RadialSelection : MonoBehaviour
 
     private void OnDestroy()
     {
+        Debug.Log("Radial menu destroyed");
         SetMenuActive(false);
     }
     private IEnumerator SwitchToMuseum()

@@ -11,12 +11,14 @@ public class ScanController : MonoBehaviour
     [SerializeField] private Transform redMarksRoot;  // Parent of red marks
     [SerializeField] private Transform glyphsRoot;   // Parent of glyph symbols
     [SerializeField] private Transform stylusTip;
+    public Camera mainCamera;
     
     [Header("Materials")]
     [SerializeField] private Material hologramMaterial;
     [SerializeField] private Material greenBoundaryMaterial;
     
     [Header("UI References")]
+    [SerializeField] private CanvasGroup initialInstructionsPanel;
     [SerializeField] private CanvasGroup instructionsPanel;
     [SerializeField] private CanvasGroup scanCompletePanel;
     [SerializeField] private CanvasGroup aiAnalysisPanel;
@@ -36,6 +38,7 @@ public class ScanController : MonoBehaviour
 
     private enum ScanState
     {
+        WaitingToStart,
         NotStarted,
         InitialScan,
         Sculpting,
@@ -44,7 +47,7 @@ public class ScanController : MonoBehaviour
         AIAnalysis
     }
 
-    private ScanState currentState = ScanState.NotStarted;
+    private ScanState currentState = ScanState.WaitingToStart;
     private Dictionary<MeshRenderer, Material> originalCoffinMaterials = new Dictionary<MeshRenderer, Material>();
     private List<Transform> redMarkObjects = new List<Transform>();
     private bool isScanning = false;
@@ -82,7 +85,7 @@ public class ScanController : MonoBehaviour
 
     private void SetupUI()
     {
-        CanvasGroup[] panels = { instructionsPanel, scanCompletePanel, aiAnalysisPanel };
+        CanvasGroup[] panels = { initialInstructionsPanel, instructionsPanel, scanCompletePanel, aiAnalysisPanel };
         foreach (var panel in panels)
         {
             if (panel != null)
@@ -95,8 +98,27 @@ public class ScanController : MonoBehaviour
 
     public void StartScan()
     {
-        if (currentState != ScanState.NotStarted) return;
-        
+        if (currentState == ScanState.WaitingToStart)
+        {
+            // Show initial instructions first
+            StartCoroutine(ShowInitialInstructions());
+        }
+        else if (currentState == ScanState.NotStarted)
+        {
+            // Start the actual scan sequence
+            StartScanSequence();
+        }
+    }
+
+        private IEnumerator ShowInitialInstructions()
+    {
+        StartCoroutine(AnimateUIPanel(initialInstructionsPanel, true));
+        currentState = ScanState.NotStarted;
+        yield return null;
+    }
+
+    private void StartScanSequence()
+    {
         // Store and replace coffin materials
         MeshRenderer[] coffinRenderers = coffinRoot.GetComponentsInChildren<MeshRenderer>();
         foreach (MeshRenderer renderer in coffinRenderers)
@@ -148,6 +170,13 @@ public class ScanController : MonoBehaviour
     {
         switch (currentState)
         {
+            case ScanState.WaitingToStart:
+                StartScan();
+                break;
+            case ScanState.NotStarted:
+                StartCoroutine(AnimateUIPanel(initialInstructionsPanel, false));
+                StartScanSequence();
+                break;
             case ScanState.InitialScan:
                 EndInitialScan();
                 break;
@@ -203,13 +232,13 @@ public class ScanController : MonoBehaviour
 
     private void ShowScanComplete()
     {
-        glyphsRoot.gameObject.SetActive(false);
+        //glyphsRoot.gameObject.SetActive(false);
         // Hide instructions panel
         StartCoroutine(AnimateUIPanel(instructionsPanel, false));
         
         // Disable red marks and glyphs
         if (redMarksRoot != null) redMarksRoot.gameObject.SetActive(false);
-        //if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
+        if (glyphsRoot != null) glyphsRoot.gameObject.SetActive(false);
         
         // Show scan complete UI
         StartCoroutine(AnimateUIPanel(scanCompletePanel, true));

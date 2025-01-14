@@ -28,6 +28,7 @@ public class GlyphRevealEffect : MonoBehaviour
     {
         if (other.CompareTag("StylusTip") && !isRevealed)
         {
+            Debug.Log("Stylus tip is inside the glyph");
             isRevealing = true;
             currentRevealTime += Time.deltaTime;
 
